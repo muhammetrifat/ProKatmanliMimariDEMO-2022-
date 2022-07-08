@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.Constants;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.InMemory;
@@ -26,38 +27,47 @@ namespace Business.Concrete
             //iş kodları buraya eklenebilir if else filan falan
             if (product.ProductName.Length < 2)
             {
-                return new ErrorResult("Ürün adı 2 harften daha kısa olamaz.");
+                //magic stringten uzak dur
+                return new ErrorResult(Messages.InvalidProductName);
 
             }
             _productDal.Add(product);
-            return new SuccessResult("Ürün Eklendi.");
+            return new SuccessResult(Messages.ProductAddSuccess);
 
         }
 
-        public List<Product> GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
             //iş kodları
-            return _productDal.GetAll();
+            if (DateTime.Now.Hour == 9)//1 saat boyunca listeleme işlemini kapatıyoruz
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MeintananceTime);
+            }
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductListed);
         }
 
-        public List<Product> GetAllByCategotyId(int id)
+        public IDataResult<List<Product>> GetAllByCategotyId(int id)
         {
-            return _productDal.GetAll(p => p.CategoryId == id);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id), Messages.ProductListed);
         }
 
-        public List<Product> GetAllByUnitPrice(decimal min, decimal max)
+        public IDataResult<List<Product>> GetAllByUnitPrice(decimal min, decimal max)
         {
-            return _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
         }
 
-        public Product GetById(int productId)
+        public IDataResult<Product> GetById(int productId)
         {
-            return _productDal.Get(p => p.ProductId == productId);
-        }
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
+        }//successdata'ya product clasını verip constructor'una product datasını attık
 
-        public List<ProductDetailDto> GetProductDetails()
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            return _productDal.GetProductDetails();
+            if (DateTime.Now.Hour == 9)//1 saat boyunca listeleme işlemini kapatıyoruz
+            {
+                return new ErrorDataResult<List<ProductDetailDto>>(Messages.MeintananceTime);
+            }
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
     }
 }

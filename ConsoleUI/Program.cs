@@ -10,7 +10,7 @@ namespace ConsoleUI
         //S
         //O YENİ ÖZELLİK EKLENİYORKEN MEVCUT KODUNA DOKUNMAYACAKSIN
         //L
-        //I
+        //I KULLANMAYACAĞIN BİŞEYİ YAZMA
         //D
         static void Main(string[] args)
         {
@@ -33,12 +33,22 @@ namespace ConsoleUI
             //ProductManager productManager = new ProductManager(new InMemoryProductDal());//inmemorydata
             ProductManager productManager = new ProductManager(new EfProductDal());//entity data
 
+            var result = productManager.GetProductDetails();
+            if (result.Success)
+            {
+                foreach (var product in productManager.GetProductDetails().Data)
+                {
+                    Console.WriteLine(product.ProductName + " / " + product.CategoryName);
+                }
+            }
+            else
+            {
+                Console.WriteLine(result.Message);
+            }
+
             //foreach (var product in productManager.GetAll())
             //foreach (var product in productManager.GetAllByCategotyId(2))
-            foreach (var product in productManager.GetProductDetails())
-            {
-                Console.WriteLine(product.ProductName + " / " + product.CategoryName);
-            }
+            
         }
     }
 }
