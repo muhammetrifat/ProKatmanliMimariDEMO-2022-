@@ -39,7 +39,7 @@ namespace Business.Concrete
         public IDataResult<List<Product>> GetAll()
         {
             //iş kodları
-            if (DateTime.Now.Hour == 9)//1 saat boyunca listeleme işlemini kapatıyoruz
+            if (DateTime.Now.Hour == 15)//1 saat boyunca listeleme işlemini kapatıyoruz
             {
                 return new ErrorDataResult<List<Product>>(Messages.MeintananceTime);
             }
